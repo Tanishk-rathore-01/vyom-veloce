@@ -2,7 +2,8 @@
 India's premier luxury vehicle marketplace — **Born in India. Built for the World.**
 
 ## Live demo
-Live URL: Deploy via Vercel (see Deployment section). After deploy, update this line with your production URL.
+- **GitHub:** https://github.com/Tanishk-rathore-01/vyom-veloce
+- **Production:** https://vyom-veloce.vercel.app
 
 **Supabase project:** `veloce` (`jvayvehgbgvhaaqhcomh`) — schema applied with 20 seeded vehicles.
 
