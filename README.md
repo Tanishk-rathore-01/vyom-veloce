@@ -2,10 +2,7 @@
 India's premier luxury vehicle marketplace — **Born in India. Built for the World.**
 
 ## Live demo
-- **GitHub:** https://github.com/Tanishk-rathore-01/vyom-veloce
 - **Production:** https://vyom-veloce.vercel.app
-
-**Supabase project:** `veloce` (`jvayvehgbgvhaaqhcomh`) — schema applied with 20 seeded vehicles.
 
 ## Tech stack
 - React + Vite
@@ -50,7 +47,7 @@ VITE_ADMIN_EMAIL=admin@vyomveloce.com
 4. Update admin policy email in `supabase/schema.sql` if using DB-level admin enforcement.
 
 ## Local development
-Install dependencies (already installed in your current setup):
+Install dependencies 
 
 ```bash
 npm install
