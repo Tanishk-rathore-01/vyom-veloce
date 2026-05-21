@@ -73,9 +73,11 @@ npm run build
 
 ## Deployment (Vercel)
 1. Push repository to GitHub.
-2. Import project into Vercel.
-3. Add all `VITE_*` environment variables in Vercel project settings.
+2. Import project into Vercel (or use linked repo `Tanishk-rathore-01/vyom-veloce`).
+3. Add all `VITE_*` environment variables in Vercel project settings (see `.env.example`).
 4. Deploy. SPA rewrites are handled by `vercel.json`.
+
+**Production env vars configured:** Supabase URL/anon key, admin email, Pexels API key, Razorpay test key ID.
 
 ## Notes
 - Tailwind CSS v4 is configured via `@tailwindcss/vite` (no `tailwind.config.js` required).
