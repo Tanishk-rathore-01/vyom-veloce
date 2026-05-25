@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/useAuth.js'
 
@@ -19,8 +19,37 @@ function getNavLinkClass({ isActive }) {
   }`
 }
 
+function MenuIcon({ open }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    >
+      {open ? (
+        <>
+          <path d="M6 6l12 12" />
+          <path d="M18 6 6 18" />
+        </>
+      ) : (
+        <>
+          <path d="M4 7h16" />
+          <path d="M4 12h16" />
+          <path d="M4 17h16" />
+        </>
+      )}
+    </svg>
+  )
+}
+
 function Navbar() {
   const [open, setOpen] = useState(false)
+  const navRef = useRef(null)
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const adminEmail = (import.meta.env.VITE_ADMIN_EMAIL ?? '').toLowerCase()
@@ -32,8 +61,37 @@ function Navbar() {
     navigate('/')
   }
 
+  useEffect(() => {
+    if (!open) {
+      return undefined
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false)
+      }
+    }
+
+    const handlePointerDown = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('pointerdown', handlePointerDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('pointerdown', handlePointerDown)
+    }
+  }, [open])
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border)] bg-[rgba(10,10,10,0.84)] backdrop-blur-xl">
+    <header
+      ref={navRef}
+      className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border)] bg-[rgba(10,10,10,0.84)] backdrop-blur-xl"
+    >
       <div className="luxury-container flex h-20 items-center justify-between">
         <Link
           to="/"
@@ -86,11 +144,7 @@ function Navbar() {
           aria-label="Toggle navigation menu"
           aria-expanded={open}
         >
-          {open ? (
-            <span className="text-xl leading-none">✕</span>
-          ) : (
-            <span className="text-xl leading-none">☰</span>
-          )}
+          <MenuIcon open={open} />
         </button>
       </div>
 

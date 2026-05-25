@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getVehicles } from '../api/vehicles.js'
+import FormField from '../components/ui/FormField.jsx'
 import { VehicleGridSkeleton } from '../components/ui/LoadingSkeleton.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
@@ -35,6 +36,14 @@ function CollectionPage() {
   const [brandFilter, setBrandFilter] = useState('all')
   const [originFilter, setOriginFilter] = useState('all')
   const [priceFilter, setPriceFilter] = useState('all')
+
+  function clearFilters() {
+    setSearchTerm('')
+    setCategoryFilter('all')
+    setBrandFilter('all')
+    setOriginFilter('all')
+    setPriceFilter('all')
+  }
 
   useEffect(() => {
     let isActive = true
@@ -128,58 +137,69 @@ function CollectionPage() {
           by segment, provenance, and budget to find your perfect machine.
         </p>
 
-        <div className="mt-10 grid gap-4 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]/70 p-5 md:grid-cols-2 xl:grid-cols-5">
-          <input
+        <div className="premium-panel mt-10 grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-5">
+          <FormField
+            id="collection-search"
+            label="Search"
             type="search"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search by title"
-            className="luxury-input xl:col-span-2"
+            containerClassName="xl:col-span-2"
           />
 
-          <select
+          <FormField
+            id="collection-category"
+            label="Category"
+            as="select"
             value={categoryFilter}
             onChange={(event) => setCategoryFilter(event.target.value)}
-            className="luxury-input"
           >
             <option value="all">All Categories</option>
             <option value="car">Car</option>
             <option value="motorcycle">Motorcycle</option>
-          </select>
+          </FormField>
 
-          <select
+          <FormField
+            id="collection-brand"
+            label="Brand"
+            as="select"
             value={brandFilter}
             onChange={(event) => setBrandFilter(event.target.value)}
-            className="luxury-input"
           >
             {brandOptions.map((brand) => (
               <option key={brand} value={brand}>
                 {brand === 'all' ? 'All Brands' : brand}
               </option>
             ))}
-          </select>
+          </FormField>
 
-          <select
+          <FormField
+            id="collection-origin"
+            label="Origin"
+            as="select"
             value={originFilter}
             onChange={(event) => setOriginFilter(event.target.value)}
-            className="luxury-input"
           >
             <option value="all">All Origins</option>
             <option value="indian">Indian</option>
             <option value="international">International</option>
-          </select>
+          </FormField>
 
-          <select
+          <FormField
+            id="collection-price"
+            label="Budget"
+            as="select"
             value={priceFilter}
             onChange={(event) => setPriceFilter(event.target.value)}
-            className="luxury-input md:col-span-2 xl:col-span-1"
+            containerClassName="md:col-span-2 xl:col-span-1"
           >
             {priceRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
-          </select>
+          </FormField>
         </div>
 
         <div className="mt-10">
@@ -197,6 +217,11 @@ function CollectionPage() {
             <StateNotice
               title="No vehicles match your filters"
               description="Adjust your search or filter criteria to explore more vehicles."
+              action={
+                <button type="button" onClick={clearFilters} className="luxury-button text-xs">
+                  Clear Filters
+                </button>
+              }
             />
           ) : null}
 

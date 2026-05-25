@@ -8,10 +8,13 @@ import {
   getListingRequests,
   getModificationRequests,
 } from '../api/requests.js'
-import { InlineLoadingSkeleton } from '../components/ui/LoadingSkeleton.jsx'
+import FormField from '../components/ui/FormField.jsx'
+import SkeletonBlock, { InlineLoadingSkeleton } from '../components/ui/LoadingSkeleton.jsx'
+import MetricCard from '../components/ui/MetricCard.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import { formatINR } from '../lib/format.js'
+import { positiveNumber, requiredMessage } from '../lib/validation.js'
 
 const vehicleFormInitial = {
   title: '',
@@ -32,6 +35,31 @@ function AdminPage() {
   const [isSavingVehicle, setIsSavingVehicle] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
+
+  function setVehicleField(field, value) {
+    setVehicleForm((previous) => ({ ...previous, [field]: value }))
+    setFieldErrors((previous) => ({ ...previous, [field]: '' }))
+  }
+
+  function validateVehicleForm() {
+    const nextErrors = {}
+    if (!vehicleForm.title.trim()) {
+      nextErrors.title = requiredMessage('Title')
+    }
+    if (!vehicleForm.brand.trim()) {
+      nextErrors.brand = requiredMessage('Brand')
+    }
+    if (!vehicleForm.price.trim()) {
+      nextErrors.price = requiredMessage('Price')
+    } else if (!positiveNumber(vehicleForm.price)) {
+      nextErrors.price = 'Enter a valid price.'
+    }
+    if (!vehicleForm.image_query.trim()) {
+      nextErrors.image_query = requiredMessage('Image query')
+    }
+    return nextErrors
+  }
 
   async function loadDashboardData() {
     setIsLoading(true)
@@ -97,6 +125,12 @@ function AdminPage() {
 
   async function handleVehicleSubmit(event) {
     event.preventDefault()
+    const nextErrors = validateVehicleForm()
+    setFieldErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      return
+    }
+
     setIsSavingVehicle(true)
     setErrorMessage('')
     setSuccessMessage('')
@@ -108,6 +142,7 @@ function AdminPage() {
       })
       setSuccessMessage('Vehicle listing added successfully.')
       setVehicleForm(vehicleFormInitial)
+      setFieldErrors({})
       await loadDashboardData()
     } catch (submitError) {
       setErrorMessage(
@@ -144,7 +179,7 @@ function AdminPage() {
   return (
     <PageTransition className="py-12">
       <section className="luxury-container space-y-10">
-        <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8">
+        <div className="premium-panel p-8">
           <p className="section-kicker">Admin Dashboard</p>
           <h1 className="section-title mt-2">Operations Console</h1>
           <p className="section-description mt-4">
@@ -152,6 +187,45 @@ function AdminPage() {
             requests from sellers.
           </p>
         </div>
+
+        {isLoading ? (
+          <div className="grid gap-4 md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <SkeletonBlock key={`admin-metric-${index}`} className="h-32" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-3">
+            <MetricCard
+              label="Vehicle Listings"
+              value={vehicles.length}
+              caption="Current total"
+              points={[1, Math.max(1, vehicles.length * 0.5), Math.max(1, vehicles.length)]}
+            />
+            <MetricCard
+              label="Modification Leads"
+              value={modificationRequests.length}
+              caption="Current total"
+              tone="saffron"
+              points={[
+                1,
+                Math.max(1, modificationRequests.length * 0.7),
+                Math.max(1, modificationRequests.length),
+              ]}
+            />
+            <MetricCard
+              label="Seller Requests"
+              value={listingRequests.length}
+              caption="Current total"
+              tone="success"
+              points={[
+                1,
+                Math.max(1, listingRequests.length * 0.65),
+                Math.max(1, listingRequests.length),
+              ]}
+            />
+          </div>
+        )}
 
         {errorMessage ? (
           <StateNotice
@@ -162,104 +236,93 @@ function AdminPage() {
         ) : null}
 
         {successMessage ? (
-          <StateNotice title="Update Complete" description={successMessage} />
+          <StateNotice
+            title="Update Complete"
+            description={successMessage}
+            variant="success"
+          />
         ) : null}
 
-        <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+        <section className="premium-panel p-6">
           <h2 className="subheading-font text-3xl text-[var(--color-gold)]">
             Add Vehicle Listing
           </h2>
-          <form onSubmit={handleVehicleSubmit} className="mt-6 grid gap-4 md:grid-cols-2">
-            <input
+          <form onSubmit={handleVehicleSubmit} className="mt-6 grid gap-4 md:grid-cols-2" noValidate>
+            <FormField
+              id="admin-vehicle-title"
+              label="Title"
               required
               type="text"
               value={vehicleForm.title}
-              onChange={(event) =>
-                setVehicleForm((previous) => ({
-                  ...previous,
-                  title: event.target.value,
-                }))
-              }
+              onChange={(event) => setVehicleField('title', event.target.value)}
               placeholder="Title"
-              className="luxury-input"
+              error={fieldErrors.title}
             />
-            <input
+            <FormField
+              id="admin-vehicle-brand"
+              label="Brand"
               required
               type="text"
               value={vehicleForm.brand}
-              onChange={(event) =>
-                setVehicleForm((previous) => ({
-                  ...previous,
-                  brand: event.target.value,
-                }))
-              }
+              onChange={(event) => setVehicleField('brand', event.target.value)}
               placeholder="Brand"
-              className="luxury-input"
+              error={fieldErrors.brand}
             />
-            <select
+            <FormField
+              id="admin-vehicle-category"
+              label="Category"
+              as="select"
               value={vehicleForm.category}
               onChange={(event) =>
-                setVehicleForm((previous) => ({
-                  ...previous,
-                  category: event.target.value,
-                }))
+                setVehicleField('category', event.target.value)
               }
-              className="luxury-input"
             >
               <option value="car">Car</option>
               <option value="motorcycle">Motorcycle</option>
-            </select>
-            <select
+            </FormField>
+            <FormField
+              id="admin-vehicle-origin"
+              label="Origin"
+              as="select"
               value={vehicleForm.origin}
               onChange={(event) =>
-                setVehicleForm((previous) => ({
-                  ...previous,
-                  origin: event.target.value,
-                }))
+                setVehicleField('origin', event.target.value)
               }
-              className="luxury-input"
             >
               <option value="indian">Indian</option>
               <option value="international">International</option>
-            </select>
-            <input
+            </FormField>
+            <FormField
+              id="admin-vehicle-engine"
+              label="Engine"
               type="text"
               value={vehicleForm.engine}
-              onChange={(event) =>
-                setVehicleForm((previous) => ({
-                  ...previous,
-                  engine: event.target.value,
-                }))
-              }
+              onChange={(event) => setVehicleField('engine', event.target.value)}
               placeholder="Engine"
-              className="luxury-input"
             />
-            <input
+            <FormField
+              id="admin-vehicle-price"
+              label="Price in INR"
               required
               type="number"
               min="1"
               value={vehicleForm.price}
-              onChange={(event) =>
-                setVehicleForm((previous) => ({
-                  ...previous,
-                  price: event.target.value,
-                }))
-              }
+              onChange={(event) => setVehicleField('price', event.target.value)}
               placeholder="Price in INR"
-              className="luxury-input"
+              error={fieldErrors.price}
             />
-            <input
+            <FormField
+              id="admin-vehicle-image-query"
+              label="Photography query"
               required
               type="text"
               value={vehicleForm.image_query}
               onChange={(event) =>
-                setVehicleForm((previous) => ({
-                  ...previous,
-                  image_query: event.target.value,
-                }))
+                setVehicleField('image_query', event.target.value)
               }
               placeholder="Image query for Pexels"
-              className="luxury-input md:col-span-2"
+              containerClassName="md:col-span-2"
+              error={fieldErrors.image_query}
             />
             <button
               type="submit"
@@ -271,7 +334,7 @@ function AdminPage() {
           </form>
         </section>
 
-        <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+        <section className="premium-panel p-6">
           <h2 className="subheading-font text-3xl text-[var(--color-gold)]">
             Vehicle Listings
           </h2>
@@ -324,7 +387,7 @@ function AdminPage() {
           )}
         </section>
 
-        <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+        <section className="premium-panel p-6">
           <h2 className="subheading-font text-3xl text-[var(--color-gold)]">
             Modification Requests
           </h2>
@@ -366,7 +429,7 @@ function AdminPage() {
           )}
         </section>
 
-        <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+        <section className="premium-panel p-6">
           <h2 className="subheading-font text-3xl text-[var(--color-gold)]">
             Listing Requests
           </h2>

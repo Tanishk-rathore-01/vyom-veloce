@@ -31,6 +31,36 @@ export function VehicleGridSkeleton({ count = 6 }) {
   )
 }
 
+export function DetailSkeleton() {
+  return (
+    <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
+      <SkeletonBlock className="h-[420px] w-full" />
+      <div className="premium-panel space-y-4 p-6">
+        <SkeletonBlock className="h-4 w-1/3" />
+        <SkeletonBlock className="h-10 w-3/4" />
+        <SkeletonBlock className="h-4 w-2/3" />
+        <SkeletonBlock className="h-12 w-1/2" />
+        <SkeletonBlock className="h-28 w-full" />
+        <SkeletonBlock className="h-12 w-full" />
+        <SkeletonBlock className="h-12 w-full" />
+      </div>
+    </div>
+  )
+}
+
+export function AdminDashboardSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 md:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <SkeletonBlock key={`metric-skeleton-${index}`} className="h-32 w-full" />
+        ))}
+      </div>
+      <SkeletonBlock className="h-56 w-full" />
+    </div>
+  )
+}
+
 export function HorizontalVehicleSkeleton({ count = 4 }) {
   return (
     <div className="flex gap-6 overflow-hidden pb-2">

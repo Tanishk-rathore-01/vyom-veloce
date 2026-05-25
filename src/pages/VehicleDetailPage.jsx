@@ -2,13 +2,19 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getVehicleById } from '../api/vehicles.js'
-import { InlineLoadingSkeleton } from '../components/ui/LoadingSkeleton.jsx'
+import bookingConfirmationImage from '../assets/generated/booking-confirmation.png'
+import fallbackVehicle from '../assets/generated/fallback-vehicle.png'
+import CheckoutSteps from '../components/ui/CheckoutSteps.jsx'
+import FormField from '../components/ui/FormField.jsx'
+import { DetailSkeleton } from '../components/ui/LoadingSkeleton.jsx'
+import LuxuryImage from '../components/ui/LuxuryImage.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import { useAuth } from '../context/useAuth.js'
 import { categoryLabel, formatINR, originLabel } from '../lib/format.js'
 import { fetchVehiclePhoto } from '../lib/images.js'
 import { openRazorpayCheckout } from '../lib/razorpay.js'
+import { isEmail, isPhone, requiredMessage } from '../lib/validation.js'
 
 const buyerInitialState = {
   name: '',
@@ -28,6 +34,7 @@ function VehicleDetailPage() {
     email: user?.email ?? '',
   })
   const [paymentError, setPaymentError] = useState('')
+  const [buyerErrors, setBuyerErrors] = useState({})
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
   const [paymentSuccessDetails, setPaymentSuccessDetails] = useState(null)
 
@@ -90,10 +97,24 @@ function VehicleDetailPage() {
       return
     }
     const resolvedBuyerEmail = buyer.email.trim() || user?.email || ''
-    if (!buyer.name.trim() || !resolvedBuyerEmail.trim() || !buyer.phone.trim()) {
-      setPaymentError(
-        'Please share your name, email, and phone number before starting payment.',
-      )
+    const nextErrors = {}
+    if (!buyer.name.trim()) {
+      nextErrors.name = requiredMessage('Full name')
+    }
+    if (!resolvedBuyerEmail.trim()) {
+      nextErrors.email = requiredMessage('Email address')
+    } else if (!isEmail(resolvedBuyerEmail)) {
+      nextErrors.email = 'Enter a valid email address.'
+    }
+    if (!buyer.phone.trim()) {
+      nextErrors.phone = requiredMessage('Phone number')
+    } else if (!isPhone(buyer.phone)) {
+      nextErrors.phone = 'Enter a reachable phone number.'
+    }
+
+    setBuyerErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      setPaymentError('')
       return
     }
 
@@ -130,10 +151,7 @@ function VehicleDetailPage() {
     <PageTransition className="py-12">
       <section className="luxury-container">
         {isLoading ? (
-          <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
-            <div className="h-[420px] animate-pulse rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]" />
-            <InlineLoadingSkeleton />
-          </div>
+          <DetailSkeleton />
         ) : null}
 
         {!isLoading && error ? (
@@ -152,22 +170,15 @@ function VehicleDetailPage() {
         {!isLoading && !error && vehicle ? (
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
             <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]">
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt={vehicle.title}
-                  className="h-[420px] w-full object-cover"
-                />
-              ) : (
-                <div className="vehicle-fallback-gradient flex h-[420px] items-center justify-center">
-                  <span className="brand-logo text-7xl text-[var(--color-gold)]">
-                    {vehicle.brand.charAt(0)}
-                  </span>
-                </div>
-              )}
+              <LuxuryImage
+                src={imageUrl}
+                fallbackSrc={fallbackVehicle}
+                alt={vehicle.title}
+                containerClassName="h-[420px] w-full"
+              />
             </div>
 
-            <div className="space-y-5 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+            <div className="premium-panel warm-panel space-y-5 p-6">
               <p className="section-kicker">Vehicle Profile</p>
               <h1 className="subheading-font text-4xl text-[var(--color-text)]">
                 {vehicle.title}
@@ -176,9 +187,11 @@ function VehicleDetailPage() {
                 {vehicle.brand} • {categoryLabel(vehicle.category)} •{' '}
                 {originLabel(vehicle.origin)}
               </p>
-              <p className="text-3xl text-[var(--color-gold)]">
+              <p className="price-chip text-2xl">
                 {formatINR(vehicle.price)}
               </p>
+
+              <CheckoutSteps current="Pay" />
 
               <div className="space-y-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-sm">
                 <p className="text-[var(--color-muted)]">
@@ -195,8 +208,10 @@ function VehicleDetailPage() {
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <input
+              <div className="grid gap-3">
+                <FormField
+                  id="buyer-name"
+                  label="Full name"
                   type="text"
                   value={buyer.name}
                   onChange={(event) =>
@@ -205,10 +220,18 @@ function VehicleDetailPage() {
                       name: event.target.value,
                     }))
                   }
+                  onBlur={() =>
+                    setBuyerErrors((previous) => ({
+                      ...previous,
+                      name: buyer.name.trim() ? '' : requiredMessage('Full name'),
+                    }))
+                  }
                   placeholder="Full name"
-                  className="luxury-input"
+                  error={buyerErrors.name}
                 />
-                <input
+                <FormField
+                  id="buyer-email"
+                  label="Email address"
                   type="email"
                   value={buyer.email || user?.email || ''}
                   onChange={(event) =>
@@ -217,10 +240,23 @@ function VehicleDetailPage() {
                       email: event.target.value,
                     }))
                   }
+                  onBlur={() => {
+                    const email = (buyer.email || user?.email || '').trim()
+                    setBuyerErrors((previous) => ({
+                      ...previous,
+                      email: !email
+                        ? requiredMessage('Email address')
+                        : isEmail(email)
+                          ? ''
+                          : 'Enter a valid email address.',
+                    }))
+                  }}
                   placeholder="Email address"
-                  className="luxury-input"
+                  error={buyerErrors.email}
                 />
-                <input
+                <FormField
+                  id="buyer-phone"
+                  label="Phone number"
                   type="tel"
                   value={buyer.phone}
                   onChange={(event) =>
@@ -229,8 +265,18 @@ function VehicleDetailPage() {
                       phone: event.target.value,
                     }))
                   }
+                  onBlur={() =>
+                    setBuyerErrors((previous) => ({
+                      ...previous,
+                      phone: !buyer.phone.trim()
+                        ? requiredMessage('Phone number')
+                        : isPhone(buyer.phone)
+                          ? ''
+                          : 'Enter a reachable phone number.',
+                    }))
+                  }
                   placeholder="Phone number"
-                  className="luxury-input"
+                  error={buyerErrors.phone}
                 />
               </div>
 
@@ -271,8 +317,14 @@ function VehicleDetailPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 12 }}
-              className="w-full max-w-lg rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-7"
+              className="premium-panel w-full max-w-lg p-7"
             >
+              <div className="confirmation-art mb-5">
+                <img
+                  src={bookingConfirmationImage}
+                  alt="Premium booking confirmation pass"
+                />
+              </div>
               <p className="section-kicker">Payment Confirmation</p>
               <h2 className="subheading-font mt-2 text-3xl text-[var(--color-gold)]">
                 Booking confirmed.

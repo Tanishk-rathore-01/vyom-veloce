@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import FormField from '../components/ui/FormField.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import { useAuth } from '../context/useAuth.js'
+import { isEmail, requiredMessage } from '../lib/validation.js'
 
 function LoginPage() {
   const { signIn, user } = useAuth()
@@ -10,6 +12,7 @@ function LoginPage() {
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const location = useLocation()
   const navigate = useNavigate()
   const redirectPath = location.state?.from || '/'
@@ -17,6 +20,20 @@ function LoginPage() {
 
   async function handleSubmit(event) {
     event.preventDefault()
+    const nextErrors = {}
+    if (!email.trim()) {
+      nextErrors.email = requiredMessage('Email address')
+    } else if (!isEmail(email)) {
+      nextErrors.email = 'Enter a valid email address.'
+    }
+    if (!password.trim()) {
+      nextErrors.password = requiredMessage('Password')
+    }
+    setFieldErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      return
+    }
+
     setIsSubmitting(true)
     setErrorMessage('')
 
@@ -36,7 +53,7 @@ function LoginPage() {
   return (
     <PageTransition className="py-12">
       <section className="luxury-container max-w-xl">
-        <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8">
+        <div className="premium-panel p-8">
           <p className="section-kicker">Secure Access</p>
           <h1 className="section-title mt-2">Welcome Back</h1>
           <p className="section-description mt-4">
@@ -56,22 +73,32 @@ function LoginPage() {
               />
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="mt-7 space-y-4">
-              <input
+            <form onSubmit={handleSubmit} className="mt-7 space-y-4" noValidate>
+              <FormField
+                id="login-email"
+                label="Email address"
                 required
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value)
+                  setFieldErrors((previous) => ({ ...previous, email: '' }))
+                }}
                 placeholder="Email address"
-                className="luxury-input"
+                error={fieldErrors.email}
               />
-              <input
+              <FormField
+                id="login-password"
+                label="Password"
                 required
                 type="password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => {
+                  setPassword(event.target.value)
+                  setFieldErrors((previous) => ({ ...previous, password: '' }))
+                }}
                 placeholder="Password"
-                className="luxury-input"
+                error={fieldErrors.password}
               />
               <button
                 type="submit"

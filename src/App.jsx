@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout.jsx'
 import CustomCursor from './components/ui/CustomCursor.jsx'
+import ErrorBoundary from './components/ui/ErrorBoundary.jsx'
 import ScrollToTop from './components/ui/ScrollToTop.jsx'
 import HomePage from './pages/HomePage.jsx'
 import CollectionPage from './pages/CollectionPage.jsx'
@@ -49,11 +50,11 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
       <CustomCursor />
       <ScrollToTop />
       <AnimatedRoutes />
-    </>
+    </ErrorBoundary>
   )
 }
 

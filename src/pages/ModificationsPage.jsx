@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { createModificationRequest } from '../api/requests.js'
+import modificationStudioImage from '../assets/generated/modification-studio.png'
+import FormField from '../components/ui/FormField.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import { indianBrands, internationalBrands } from '../lib/constants.js'
+import { isEmail, isPhone, requiredMessage } from '../lib/validation.js'
 
 const formInitialState = {
   name: '',
@@ -40,9 +43,48 @@ function ModificationsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
+
+  function setFieldValue(field, value) {
+    setFormData((previous) => ({ ...previous, [field]: value }))
+    setFieldErrors((previous) => ({ ...previous, [field]: '' }))
+  }
+
+  function validateForm() {
+    const nextErrors = {}
+    if (!formData.name.trim()) {
+      nextErrors.name = requiredMessage('Full name')
+    }
+    if (!formData.phone.trim()) {
+      nextErrors.phone = requiredMessage('Phone number')
+    } else if (!isPhone(formData.phone)) {
+      nextErrors.phone = 'Enter a reachable phone number.'
+    }
+    if (!formData.email.trim()) {
+      nextErrors.email = requiredMessage('Email address')
+    } else if (!isEmail(formData.email)) {
+      nextErrors.email = 'Enter a valid email address.'
+    }
+    if (!formData.vehicle_model.trim()) {
+      nextErrors.vehicle_model = requiredMessage('Vehicle model')
+    }
+    if (!formData.modification_type) {
+      nextErrors.modification_type = requiredMessage('Modification type')
+    }
+    if (!formData.budget_range.trim()) {
+      nextErrors.budget_range = requiredMessage('Budget range')
+    }
+    return nextErrors
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
+    const nextErrors = validateForm()
+    setFieldErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      return
+    }
+
     setIsSubmitting(true)
     setSuccessMessage('')
     setErrorMessage('')
@@ -53,6 +95,7 @@ function ModificationsPage() {
         'Request submitted successfully. Our modification specialists will contact you shortly.',
       )
       setFormData(formInitialState)
+      setFieldErrors({})
     } catch (submitError) {
       setErrorMessage(
         submitError.message || 'Unable to submit request. Please retry in a moment.',
@@ -65,7 +108,8 @@ function ModificationsPage() {
   return (
     <PageTransition className="py-12">
       <section className="luxury-container">
-        <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 sm:p-10">
+        <div className="grid gap-8 overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] lg:grid-cols-[1fr_1.1fr]">
+          <div className="p-8 sm:p-10">
           <p className="section-kicker">Modification Studio</p>
           <h1 className="section-title mt-2">We Transform Machines</h1>
           <p className="section-description mt-5">
@@ -73,6 +117,12 @@ function ModificationsPage() {
             our atelier delivers custom programs for both international and Indian
             marques.
           </p>
+          </div>
+          <img
+            src={modificationStudioImage}
+            alt="Bespoke VYOM Veloce modification studio"
+            className="h-full min-h-[280px] w-full object-cover"
+          />
         </div>
       </section>
 
@@ -95,93 +145,92 @@ function ModificationsPage() {
       </section>
 
       <section className="luxury-container pb-20">
-        <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
+        <div className="premium-panel p-6 sm:p-8">
           <p className="section-kicker">Request Consultation</p>
           <h2 className="subheading-font mt-2 text-3xl text-[var(--color-gold)]">
             Build Your Bespoke Package
           </h2>
-          <form onSubmit={handleSubmit} className="mt-7 grid gap-4 md:grid-cols-2">
-            <input
+          <form onSubmit={handleSubmit} className="mt-7 grid gap-4 md:grid-cols-2" noValidate>
+            <FormField
+              id="mod-name"
+              label="Full name"
               required
               type="text"
               value={formData.name}
-              onChange={(event) =>
-                setFormData((previous) => ({ ...previous, name: event.target.value }))
-              }
+              onChange={(event) => setFieldValue('name', event.target.value)}
               placeholder="Full name"
-              className="luxury-input"
+              error={fieldErrors.name}
             />
-            <input
+            <FormField
+              id="mod-phone"
+              label="Phone number"
               required
               type="tel"
               value={formData.phone}
-              onChange={(event) =>
-                setFormData((previous) => ({ ...previous, phone: event.target.value }))
-              }
+              onChange={(event) => setFieldValue('phone', event.target.value)}
               placeholder="Phone number"
-              className="luxury-input"
+              error={fieldErrors.phone}
             />
-            <input
+            <FormField
+              id="mod-email"
+              label="Email address"
               required
               type="email"
               value={formData.email}
-              onChange={(event) =>
-                setFormData((previous) => ({ ...previous, email: event.target.value }))
-              }
+              onChange={(event) => setFieldValue('email', event.target.value)}
               placeholder="Email address"
-              className="luxury-input"
+              error={fieldErrors.email}
             />
-            <input
+            <FormField
+              id="mod-vehicle-model"
+              label="Vehicle model"
               required
               type="text"
               value={formData.vehicle_model}
               onChange={(event) =>
-                setFormData((previous) => ({
-                  ...previous,
-                  vehicle_model: event.target.value,
-                }))
+                setFieldValue('vehicle_model', event.target.value)
               }
               placeholder="Vehicle model"
-              className="luxury-input"
+              error={fieldErrors.vehicle_model}
             />
-            <select
+            <FormField
+              id="mod-type"
+              label="Modification type"
+              as="select"
               required
               value={formData.modification_type}
               onChange={(event) =>
-                setFormData((previous) => ({
-                  ...previous,
-                  modification_type: event.target.value,
-                }))
+                setFieldValue('modification_type', event.target.value)
               }
-              className="luxury-input"
+              error={fieldErrors.modification_type}
             >
               <option value="">Select modification type</option>
               <option value="exhaust">Exhaust</option>
               <option value="suspension">Suspension</option>
               <option value="bodywork">Bodywork</option>
               <option value="full custom">Full Custom</option>
-            </select>
-            <input
+            </FormField>
+            <FormField
+              id="mod-budget"
+              label="Budget range"
               required
               type="text"
               value={formData.budget_range}
               onChange={(event) =>
-                setFormData((previous) => ({
-                  ...previous,
-                  budget_range: event.target.value,
-                }))
+                setFieldValue('budget_range', event.target.value)
               }
               placeholder="Budget range (INR)"
-              className="luxury-input"
+              error={fieldErrors.budget_range}
             />
-            <textarea
+            <FormField
+              id="mod-message"
+              label="Vision notes"
+              as="textarea"
               rows={4}
               value={formData.message}
-              onChange={(event) =>
-                setFormData((previous) => ({ ...previous, message: event.target.value }))
-              }
+              onChange={(event) => setFieldValue('message', event.target.value)}
               placeholder="Describe your vision"
-              className="luxury-input md:col-span-2"
+              containerClassName="md:col-span-2"
             />
 
             <button
@@ -195,7 +244,11 @@ function ModificationsPage() {
 
           {successMessage ? (
             <div className="mt-5">
-              <StateNotice title="Request Received" description={successMessage} />
+              <StateNotice
+                title="Request Received"
+                description={successMessage}
+                variant="success"
+              />
             </div>
           ) : null}
 

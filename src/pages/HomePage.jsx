@@ -6,15 +6,14 @@ import { HorizontalVehicleSkeleton } from '../components/ui/LoadingSkeleton.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import VehicleCard from '../components/ui/VehicleCard.jsx'
+import heroImage from '../assets/generated/vyom-hero.png'
+import modificationStudioImage from '../assets/generated/modification-studio.png'
 import {
   expansionMarkets,
   headquarters,
   modificationPreview,
 } from '../lib/constants.js'
 import { fetchVehiclePhoto } from '../lib/images.js'
-
-const heroImage =
-  'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=1600'
 
 function HomePage() {
   const [featuredVehicles, setFeaturedVehicles] = useState([])
@@ -73,9 +72,11 @@ function HomePage() {
         <img
           src={heroImage}
           alt="Luxury performance vehicle"
+          loading="eager"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,10,0.55)_0%,rgba(10,10,10,0.88)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,10,0.92)_0%,rgba(10,10,10,0.62)_45%,rgba(10,10,10,0.25)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-[var(--color-bg)]" />
         <div className="relative z-10 luxury-container flex min-h-[88vh] flex-col items-start justify-center py-24">
           <motion.p
             className="section-kicker mb-4"
@@ -94,7 +95,7 @@ function HomePage() {
             VYOM Veloce
           </motion.h1>
           <motion.p
-            className="subheading-font mt-6 text-2xl text-[var(--color-gold)] sm:text-4xl"
+            className="subheading-font mt-6 max-w-3xl text-2xl font-semibold text-[var(--color-gold)] sm:text-4xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
@@ -182,7 +183,7 @@ function HomePage() {
             owners who expect white-glove support.
           </p>
         </div>
-        <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8">
+        <div className="premium-panel p-8">
           <p className="section-kicker">Business Model</p>
           <div className="mt-5 space-y-5 text-sm leading-relaxed text-[var(--color-muted)]">
             <p>
@@ -249,6 +250,14 @@ function HomePage() {
           <Link to="/modifications" className="outline-button w-fit text-xs">
             See All Packages
           </Link>
+        </div>
+        <div className="mb-8 overflow-hidden rounded-3xl border border-[var(--color-border)]">
+          <img
+            src={modificationStudioImage}
+            alt="VYOM Veloce bespoke modification studio"
+            loading="lazy"
+            className="h-[280px] w-full object-cover sm:h-[360px]"
+          />
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {modificationPreview.map((item) => (
