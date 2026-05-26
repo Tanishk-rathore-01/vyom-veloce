@@ -6,6 +6,7 @@ import FormField from '../components/ui/FormField.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import { indianBrands, internationalBrands } from '../lib/constants.js'
+import { getGeneratedModificationImage } from '../lib/generatedVisuals.js'
 import { isEmail, isPhone, requiredMessage } from '../lib/validation.js'
 
 const formInitialState = {
@@ -20,21 +21,37 @@ const formInitialState = {
 
 function ModificationCard({ vehicle, modificationType, priceRange }) {
   return (
-    <motion.article
+    <motion.a
+      href="#mod-consultation"
       whileHover={{ y: -5 }}
-      className="rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[rgba(201,168,76,0.16)] via-[rgba(17,17,17,0.92)] to-[rgba(255,107,0,0.14)] p-5"
+      className="glow-card group block overflow-hidden rounded-2xl"
+      data-cursor="interactive"
     >
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-border)] bg-[rgba(0,0,0,0.36)]">
-        <span className="brand-logo text-2xl text-[var(--color-gold)]">
-          {vehicle.charAt(0)}
-        </span>
+      <div className="relative h-52 overflow-hidden">
+        <img
+          src={getGeneratedModificationImage(vehicle)}
+          alt={`${vehicle} modification program`}
+          loading="lazy"
+          className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        <div className="absolute bottom-4 left-4 rounded-full border border-[rgba(201,168,76,0.26)] bg-black/60 px-3 py-1 text-xs uppercase text-[var(--color-gold)]">
+          {modificationType}
+        </div>
       </div>
-      <h3 className="subheading-font text-2xl text-[var(--color-text)]">{vehicle}</h3>
-      <p className="mt-2 text-xs uppercase tracking-[0.2em] text-[var(--color-saffron)]">
-        {modificationType}
-      </p>
-      <p className="mt-3 text-sm text-[var(--color-muted)]">{priceRange}</p>
-    </motion.article>
+      <div className="p-5">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-border)] bg-[rgba(0,0,0,0.36)]">
+          <span className="brand-logo text-2xl text-[var(--color-gold)]">
+            {vehicle.charAt(0)}
+          </span>
+        </div>
+        <h3 className="subheading-font text-2xl text-[var(--color-text)]">{vehicle}</h3>
+        <p className="mt-3 text-sm text-[var(--color-muted)]">{priceRange}</p>
+        <p className="mt-5 text-xs font-semibold uppercase text-[var(--color-gold)] transition group-hover:text-[var(--color-saffron)]">
+          Tap to open consultation
+        </p>
+      </div>
+    </motion.a>
   )
 }
 
@@ -110,13 +127,24 @@ function ModificationsPage() {
       <section className="luxury-container">
         <div className="grid gap-8 overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] lg:grid-cols-[1fr_1.1fr]">
           <div className="p-8 sm:p-10">
-          <p className="section-kicker">Modification Studio</p>
-          <h1 className="section-title mt-2">We Transform Machines</h1>
-          <p className="section-description mt-5">
-            From subtle dynamics to complete visual and performance overhauls,
-            our atelier delivers custom programs for both international and Indian
-            marques.
-          </p>
+            <p className="section-kicker">Modification Studio</p>
+            <h1 className="section-title mt-2">We Transform Machines</h1>
+            <p className="section-description mt-5">
+              From subtle dynamics to complete visual and performance overhauls,
+              our atelier delivers custom programs for both international and Indian
+              marques.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3 text-xs uppercase text-[var(--color-muted)]">
+              <span className="rounded-full border border-[var(--color-border)] px-3 py-2">
+                Aero
+              </span>
+              <span className="rounded-full border border-[var(--color-border)] px-3 py-2">
+                Exhaust
+              </span>
+              <span className="rounded-full border border-[var(--color-border)] px-3 py-2">
+                Suspension
+              </span>
+            </div>
           </div>
           <img
             src={modificationStudioImage}
@@ -144,7 +172,7 @@ function ModificationsPage() {
         </div>
       </section>
 
-      <section className="luxury-container pb-20">
+      <section id="mod-consultation" className="luxury-container scroll-mt-28 pb-20">
         <div className="premium-panel p-6 sm:p-8">
           <p className="section-kicker">Request Consultation</p>
           <h2 className="subheading-font mt-2 text-3xl text-[var(--color-gold)]">

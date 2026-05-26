@@ -12,6 +12,7 @@ import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import { useAuth } from '../context/useAuth.js'
 import { categoryLabel, formatINR, originLabel } from '../lib/format.js'
+import { getGeneratedVehicleImage } from '../lib/generatedVisuals.js'
 import { fetchVehiclePhoto } from '../lib/images.js'
 import { openRazorpayCheckout } from '../lib/razorpay.js'
 import { isEmail, isPhone, requiredMessage } from '../lib/validation.js'
@@ -47,18 +48,20 @@ function VehicleDetailPage() {
 
       try {
         const data = await getVehicleById(id)
-        let fetchedImage = null
-        try {
-          fetchedImage = await fetchVehiclePhoto(data.image_query, {
-            category: data.category,
-          })
-        } catch {
-          fetchedImage = null
+        let resolvedImage = getGeneratedVehicleImage(data)
+        if (!resolvedImage) {
+          try {
+            resolvedImage = await fetchVehiclePhoto(data.image_query, {
+              category: data.category,
+            })
+          } catch {
+            resolvedImage = null
+          }
         }
 
         if (isActive) {
           setVehicle(data)
-          setImageUrl(fetchedImage)
+          setImageUrl(resolvedImage)
         }
       } catch (loadError) {
         if (isActive) {
@@ -169,14 +172,19 @@ function VehicleDetailPage() {
 
         {!isLoading && !error && vehicle ? (
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
-            <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]">
+            <motion.div
+              className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
               <LuxuryImage
                 src={imageUrl}
                 fallbackSrc={fallbackVehicle}
                 alt={vehicle.title}
-                containerClassName="h-[420px] w-full"
+                containerClassName="h-[420px] w-full lg:h-[560px]"
+                className="transition duration-700 hover:scale-105"
               />
-            </div>
+            </motion.div>
 
             <div className="premium-panel warm-panel space-y-5 p-6">
               <p className="section-kicker">Vehicle Profile</p>

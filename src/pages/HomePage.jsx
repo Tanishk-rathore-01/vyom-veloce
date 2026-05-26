@@ -13,6 +13,7 @@ import {
   headquarters,
   modificationPreview,
 } from '../lib/constants.js'
+import { getGeneratedVehicleImage, getShowroomImage } from '../lib/generatedVisuals.js'
 import { fetchVehiclePhoto } from '../lib/images.js'
 
 function HomePage() {
@@ -31,13 +32,18 @@ function HomePage() {
         const vehicles = await getLatestVehicles(4)
         const vehiclesWithImages = await Promise.all(
           vehicles.map(async (vehicle) => {
+            const generatedImage = getGeneratedVehicleImage(vehicle)
+            if (generatedImage) {
+              return { ...vehicle, imageUrl: generatedImage, visualSource: 'generated' }
+            }
+
             try {
               const imageUrl = await fetchVehiclePhoto(vehicle.image_query, {
                 category: vehicle.category,
               })
-              return { ...vehicle, imageUrl }
+              return { ...vehicle, imageUrl, visualSource: 'pexels' }
             } catch {
-              return { ...vehicle, imageUrl: null }
+              return { ...vehicle, imageUrl: null, visualSource: 'fallback' }
             }
           }),
         )
@@ -77,6 +83,11 @@ function HomePage() {
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,10,0.92)_0%,rgba(10,10,10,0.62)_45%,rgba(10,10,10,0.25)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-[var(--color-bg)]" />
+        <div className="hero-motion-lines" aria-hidden>
+          <span />
+          <span />
+          <span />
+        </div>
         <div className="relative z-10 luxury-container flex min-h-[88vh] flex-col items-start justify-center py-24">
           <motion.p
             className="section-kicker mb-4"
@@ -92,7 +103,8 @@ function HomePage() {
             animate={{ opacity: 1, y: 0, letterSpacing: '0.08em' }}
             transition={{ duration: 0.8 }}
           >
-            VYOM Veloce
+            <span className="hero-word">VYOM</span>{' '}
+            <span className="hero-word hero-word-delay">Veloce</span>
           </motion.h1>
           <motion.p
             className="subheading-font mt-6 max-w-3xl text-2xl font-semibold text-[var(--color-gold)] sm:text-4xl"
@@ -157,7 +169,7 @@ function HomePage() {
         ) : null}
 
         {!isLoading && !error && featuredVehicles.length > 0 ? (
-          <div className="flex gap-6 overflow-x-auto pb-4">
+          <div className="luxury-scroll flex gap-6 overflow-x-auto pb-4">
             {featuredVehicles.map((vehicle) => (
               <div key={vehicle.id} className="min-w-[290px] flex-1">
                 <VehicleCard vehicle={vehicle} imageUrl={vehicle.imageUrl} compact />
@@ -211,14 +223,24 @@ function HomePage() {
             <motion.article
               key={office.city}
               whileHover={{ y: -5 }}
-              className={`rounded-3xl border border-[var(--color-border)] bg-gradient-to-br ${office.gradient} p-6`}
+              className="glow-card group overflow-hidden rounded-3xl"
             >
-              <h3 className="subheading-font text-3xl text-[var(--color-text)]">
-                {office.city}
-              </h3>
-              <p className="mt-4 text-sm leading-relaxed text-[var(--color-text)]/80">
-                {office.address}
-              </p>
+              <div className="h-48 overflow-hidden">
+                <img
+                  src={getShowroomImage(office.city)}
+                  alt={`${office.city} VYOM Veloce showroom`}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="subheading-font text-3xl text-[var(--color-text)]">
+                  {office.city}
+                </h3>
+                <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted)]">
+                  {office.address}
+                </p>
+              </div>
             </motion.article>
           ))}
         </div>
@@ -264,7 +286,7 @@ function HomePage() {
             <motion.article
               key={item.title}
               whileHover={{ y: -4 }}
-              className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6"
+              className="glow-card rounded-3xl p-6"
             >
               <h3 className="subheading-font text-2xl text-[var(--color-gold)]">
                 {item.title}

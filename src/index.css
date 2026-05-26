@@ -228,6 +228,72 @@ p {
   line-height: 1.75;
 }
 
+.hero-word {
+  display: inline-block;
+  animation: hero-word-rise 900ms var(--ease-luxury) both;
+}
+
+.hero-word-delay {
+  animation-delay: 180ms;
+}
+
+.hero-motion-lines {
+  position: absolute;
+  inset: auto 0 18% 0;
+  z-index: 1;
+  pointer-events: none;
+  display: grid;
+  gap: 0.8rem;
+  opacity: 0.75;
+}
+
+.hero-motion-lines span {
+  display: block;
+  height: 1px;
+  width: min(42vw, 580px);
+  margin-left: auto;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.55), transparent);
+  animation: motion-line 4.8s var(--ease-luxury) infinite;
+}
+
+.hero-motion-lines span:nth-child(2) {
+  width: min(34vw, 460px);
+  animation-delay: 700ms;
+}
+
+.hero-motion-lines span:nth-child(3) {
+  width: min(26vw, 360px);
+  animation-delay: 1.35s;
+}
+
+@keyframes hero-word-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-line {
+  0% {
+    opacity: 0;
+    transform: translateX(20%);
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-22%);
+  }
+}
+
 .glass-panel {
   border: 1px solid var(--color-border);
   background: rgba(17, 17, 17, 0.72);
@@ -274,6 +340,30 @@ p {
   opacity: 1;
 }
 
+.vehicle-card-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(255, 255, 255, 0.18) 48%,
+    transparent 60%,
+    transparent 100%
+  );
+  opacity: 0;
+  transform: translateX(-120%);
+  transition:
+    opacity 360ms var(--ease-luxury),
+    transform 900ms var(--ease-luxury);
+}
+
+.glow-card:hover .vehicle-card-shine {
+  opacity: 1;
+  transform: translateX(120%);
+}
+
 .luxury-button {
   display: inline-flex;
   align-items: center;
@@ -295,6 +385,11 @@ p {
 .luxury-button:hover {
   transform: translateY(-3px);
   box-shadow: var(--glow-gold), 0 16px 40px rgba(201, 168, 76, 0.3);
+}
+
+.luxury-button:active,
+.outline-button:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
 .outline-button {

@@ -21,6 +21,7 @@ function VehicleCard({ vehicle, imageUrl = null, compact = false }) {
             containerClassName="h-full w-full"
             className="transition duration-700 group-hover:scale-110"
           />
+          <span className="vehicle-card-shine" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.75)] via-transparent to-transparent" />
           {!imageUrl ? (
             <div className="absolute left-4 top-4 grid h-12 w-12 place-items-center rounded-full border border-[rgba(201,168,76,0.28)] bg-black/55">

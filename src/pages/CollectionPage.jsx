@@ -6,6 +6,7 @@ import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import VehicleCard from '../components/ui/VehicleCard.jsx'
 import { priceRangeOptions } from '../lib/constants.js'
+import { getGeneratedVehicleImage } from '../lib/generatedVisuals.js'
 import { fetchVehiclePhoto } from '../lib/images.js'
 
 function matchesPriceRange(price, selectedRange) {
@@ -60,13 +61,23 @@ function CollectionPage() {
             (vehicle, index) =>
               new Promise((resolve) => {
                 setTimeout(async () => {
+                  const generatedImage = getGeneratedVehicleImage(vehicle)
+                  if (generatedImage) {
+                    resolve({
+                      ...vehicle,
+                      imageUrl: generatedImage,
+                      visualSource: 'generated',
+                    })
+                    return
+                  }
+
                   try {
                     const imageUrl = await fetchVehiclePhoto(vehicle.image_query, {
                       category: vehicle.category,
                     })
-                    resolve({ ...vehicle, imageUrl })
+                    resolve({ ...vehicle, imageUrl, visualSource: 'pexels' })
                   } catch {
-                    resolve({ ...vehicle, imageUrl: null })
+                    resolve({ ...vehicle, imageUrl: null, visualSource: 'fallback' })
                   }
                 }, index * 150)
               }),
@@ -133,8 +144,9 @@ function CollectionPage() {
         <p className="section-kicker">Collection</p>
         <h1 className="section-title mt-2">Curated Cinematic Gallery</h1>
         <p className="section-description mt-4">
-          Discover luxury vehicles across Indian and international marques. Filter
-          by segment, provenance, and budget to find your perfect machine.
+          Discover VYOM-owned studio visuals for live inventory across cars and
+          motorcycles. Filter by segment, provenance, and budget to find your
+          perfect machine.
         </p>
 
         <div className="premium-panel mt-10 grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-5">
