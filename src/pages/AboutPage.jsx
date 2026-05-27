@@ -113,7 +113,7 @@ function AboutPage() {
 
         <div className="grid gap-6 overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] lg:grid-cols-[1.05fr_1fr]">
           <img
-            src={aboutImages.globalVision}
+            src={aboutImages.heritageVision}
             alt="VYOM global luxury expansion vision"
             className="h-full min-h-[300px] w-full object-cover"
             loading="lazy"
@@ -130,20 +130,29 @@ function AboutPage() {
           </div>
         </div>
 
-        <div className="pb-8">
-          <p className="section-kicker">Future Expansion</p>
-          <h2 className="section-title mt-2">Coming Soon</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {expansionMarkets.map((market) => (
-              <div
-                key={market.name}
-                className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-5 py-4"
-              >
-                <p className="subheading-font text-2xl text-[var(--color-gold)]">
-                  {market.flag} {market.name}
-                </p>
-              </div>
-            ))}
+        <div className="expansion-showcase">
+          <img
+            src={aboutImages.internationalExpansion}
+            alt="VYOM international showroom expansion vision"
+            loading="lazy"
+          />
+          <div className="expansion-overlay" />
+          <div className="expansion-content">
+            <p className="section-kicker">Future Expansion</p>
+            <h2 className="section-title mt-2">Coming Soon</h2>
+            <p className="section-description mt-4">
+              VYOM&apos;s global rollout begins as a collector network: curated
+              sourcing, concierge delivery, and modification standards carried
+              from India into international luxury capitals.
+            </p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {expansionMarkets.map((market) => (
+                <div key={market.name} className="expansion-market-card">
+                  <span>{market.flag}</span>
+                  <p>{market.name}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

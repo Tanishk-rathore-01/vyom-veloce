@@ -173,7 +173,7 @@ function VehicleDetailPage() {
         {!isLoading && !error && vehicle ? (
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
             <motion.div
-              className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]"
+              className="vehicle-detail-gallery overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]"
               whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -181,8 +181,10 @@ function VehicleDetailPage() {
                 src={imageUrl}
                 fallbackSrc={fallbackVehicle}
                 alt={vehicle.title}
-                containerClassName="h-[420px] w-full lg:h-[560px]"
-                className="transition duration-700 hover:scale-105"
+                containerClassName="aspect-[16/10] min-h-[300px] w-full"
+                className="p-3 transition duration-700 hover:scale-[1.02]"
+                fit="contain"
+                withBackdrop
               />
             </motion.div>
 

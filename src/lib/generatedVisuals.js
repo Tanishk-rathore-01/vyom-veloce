@@ -1,6 +1,8 @@
 import aboutAtelierCraft from '../assets/generated/about/atelier-craft.png'
 import aboutBrandStory from '../assets/generated/about/brand-story.png'
 import aboutGlobalVision from '../assets/generated/about/global-vision.png'
+import aboutHeritageVision from '../assets/generated/about/heritage-vision.png'
+import aboutInternationalExpansion from '../assets/generated/about/international-expansion.png'
 import modBajajDominar400 from '../assets/generated/modifications/bajaj-dominar-400.png'
 import modBmwCustom from '../assets/generated/modifications/bmw-custom.png'
 import modDucatiExhaust from '../assets/generated/modifications/ducati-exhaust.png'
@@ -89,6 +91,8 @@ export const aboutImages = {
   brandStory: aboutBrandStory,
   atelierCraft: aboutAtelierCraft,
   globalVision: aboutGlobalVision,
+  heritageVision: aboutHeritageVision,
+  internationalExpansion: aboutInternationalExpansion,
 }
 
 export function getGeneratedVehicleImage(vehicle) {

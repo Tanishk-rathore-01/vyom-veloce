@@ -7,6 +7,8 @@ function LuxuryImage({
   containerClassName = '',
   fallbackClassName = 'vehicle-fallback-gradient',
   fallbackSrc = '',
+  fit = 'cover',
+  withBackdrop = false,
 }) {
   const [hasError, setHasError] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -19,12 +21,21 @@ function LuxuryImage({
           role="img"
           aria-label={alt}
         >
+          {withBackdrop ? (
+            <img
+              src={fallbackSrc}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-xl"
+            />
+          ) : null}
           <img
             src={fallbackSrc}
             alt=""
             loading="lazy"
             decoding="async"
-            className={`h-full w-full object-cover ${className}`.trim()}
+            className={`relative h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'} ${className}`.trim()}
           />
           <span className="absolute bottom-3 right-3 rounded-full border border-[rgba(201,168,76,0.22)] bg-black/60 px-3 py-1 text-[0.62rem] uppercase tracking-[0.18em] text-[var(--color-gold)]">
             Studio preview
@@ -44,6 +55,16 @@ function LuxuryImage({
 
   return (
     <div className={`relative overflow-hidden ${containerClassName}`.trim()}>
+      {withBackdrop ? (
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          aria-hidden
+          className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-xl"
+        />
+      ) : null}
       {!isLoaded ? (
         <div
           className={`absolute inset-0 animate-pulse bg-[var(--color-surface-raised)]`}
@@ -57,7 +78,7 @@ function LuxuryImage({
         decoding="async"
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
-        className={`h-full w-full object-cover transition duration-700 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} ${className}`.trim()}
+        className={`relative h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'} transition duration-700 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} ${className}`.trim()}
       />
     </div>
   )

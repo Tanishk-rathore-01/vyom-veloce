@@ -95,9 +95,10 @@ function Navbar() {
       <div className="luxury-container flex h-20 items-center justify-between">
         <Link
           to="/"
-          className="brand-logo text-2xl text-[var(--color-gold)] sm:text-3xl"
+          className="nav-brand-mark text-2xl sm:text-3xl"
         >
-          VYOM Veloce
+          <span>VYOM</span>
+          <span>Veloce</span>
         </Link>
 
         <nav className="hidden items-center gap-2 lg:flex">

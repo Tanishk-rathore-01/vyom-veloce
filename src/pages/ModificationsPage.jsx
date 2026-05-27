@@ -55,6 +55,25 @@ function ModificationCard({ vehicle, modificationType, priceRange }) {
   )
 }
 
+const modificationSteps = [
+  {
+    title: 'Consult',
+    description: 'You share the vehicle, budget, use case, and visual direction.',
+  },
+  {
+    title: 'Diagnose',
+    description: 'Our team checks platform fit, mechanical limits, and compliance.',
+  },
+  {
+    title: 'Design',
+    description: 'We prepare a scoped package across aero, exhaust, suspension, cabin, and finish.',
+  },
+  {
+    title: 'Build & Handover',
+    description: 'Approved work is scheduled, quality checked, and delivered with handover notes.',
+  },
+]
+
 function ModificationsPage() {
   const [formData, setFormData] = useState(formInitialState)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -155,6 +174,24 @@ function ModificationsPage() {
       </section>
 
       <section className="luxury-container py-16">
+        <div className="mb-12">
+          <p className="section-kicker">How It Works</p>
+          <h2 className="section-title mt-2">From Vision to Road-Ready Build</h2>
+          <div className="mt-7 grid gap-4 md:grid-cols-4">
+            {modificationSteps.map((step, index) => (
+              <motion.article
+                key={step.title}
+                whileHover={{ y: -5 }}
+                className="process-card"
+              >
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+
         <p className="section-kicker">International Brands</p>
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {internationalBrands.map((brand) => (

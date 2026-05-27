@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createListingRequest } from '../api/requests.js'
+import emptyShowroomImage from '../assets/generated/empty-showroom.png'
 import FormField from '../components/ui/FormField.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
@@ -114,6 +115,21 @@ function ListVehiclePage() {
             <p className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4">
               Our team reviews your vehicle and contacts you within 48 hours.
             </p>
+          </div>
+          <div className="listing-ai-panel">
+            <img
+              src={emptyShowroomImage}
+              alt="AI-assisted VYOM listing media preview"
+              loading="lazy"
+            />
+            <div>
+              <p className="section-kicker">AI-Assisted Media</p>
+              <p>
+                After review, VYOM can prepare studio-style listing visuals from
+                verified owner photos. Generation belongs on a protected server
+                endpoint, so no free API key is exposed in the customer browser.
+              </p>
+            </div>
           </div>
         </div>
 

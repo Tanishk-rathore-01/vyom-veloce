@@ -13,8 +13,43 @@ import {
   headquarters,
   modificationPreview,
 } from '../lib/constants.js'
-import { getGeneratedVehicleImage, getShowroomImage } from '../lib/generatedVisuals.js'
+import {
+  aboutImages,
+  getGeneratedVehicleImage,
+  getShowroomImage,
+} from '../lib/generatedVisuals.js'
 import { fetchVehiclePhoto } from '../lib/images.js'
+
+const brandLetters = ['V', 'Y', 'O', 'M']
+
+function HeroBrandLockup() {
+  return (
+    <div className="hero-brand-lockup" aria-label="VYOM Veloce">
+      <span className="hero-brand-primary" aria-hidden>
+        {brandLetters.map((letter, index) => (
+          <motion.span
+            key={`${letter}-${index}`}
+            initial={{ opacity: 0, y: 28, rotateX: 55 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ delay: 0.22 + index * 0.08, duration: 0.72 }}
+          >
+            {letter}
+          </motion.span>
+        ))}
+      </span>
+      <motion.span
+        className="hero-brand-secondary"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.68, duration: 0.7 }}
+        aria-hidden
+      >
+        Veloce
+      </motion.span>
+      <span className="sr-only">VYOM Veloce</span>
+    </div>
+  )
+}
 
 function HomePage() {
   const [featuredVehicles, setFeaturedVehicles] = useState([])
@@ -75,13 +110,17 @@ function HomePage() {
   return (
     <PageTransition>
       <section className="relative min-h-[88vh] overflow-hidden">
-        <img
+        <motion.img
           src={heroImage}
           alt="Luxury performance vehicle"
           loading="eager"
           className="absolute inset-0 h-full w-full object-cover"
+          initial={{ scale: 1.06 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 4.5, ease: [0.22, 1, 0.36, 1] }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,10,0.92)_0%,rgba(10,10,10,0.62)_45%,rgba(10,10,10,0.25)_100%)]" />
+        <div className="hero-aurora" aria-hidden />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-[var(--color-bg)]" />
         <div className="hero-motion-lines" aria-hidden>
           <span />
@@ -97,15 +136,7 @@ function HomePage() {
           >
             India&apos;s Premier Luxury Marketplace
           </motion.p>
-          <motion.h1
-            className="brand-logo text-5xl leading-none text-[var(--color-text)] sm:text-7xl"
-            initial={{ opacity: 0, y: 26, letterSpacing: '0.2em' }}
-            animate={{ opacity: 1, y: 0, letterSpacing: '0.08em' }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="hero-word">VYOM</span>{' '}
-            <span className="hero-word hero-word-delay">Veloce</span>
-          </motion.h1>
+          <HeroBrandLockup />
           <motion.p
             className="subheading-font mt-6 max-w-3xl text-2xl font-semibold text-[var(--color-gold)] sm:text-4xl"
             initial={{ opacity: 0, y: 20 }}
@@ -136,6 +167,16 @@ function HomePage() {
             <Link to="/modifications" className="outline-button">
               Book a Modification
             </Link>
+          </motion.div>
+          <motion.div
+            className="hero-stat-strip"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.82 }}
+          >
+            <span>20 curated machines</span>
+            <span>3 Indian showrooms</span>
+            <span>6 global markets next</span>
           </motion.div>
         </div>
       </section>
@@ -179,7 +220,7 @@ function HomePage() {
         ) : null}
       </section>
 
-      <section className="luxury-container grid gap-14 py-20 lg:grid-cols-[1.2fr_1fr]">
+      <section className="luxury-container grid gap-8 py-20 lg:grid-cols-[1fr_1.05fr]">
         <div className="space-y-6">
           <p className="section-kicker">Brand Story</p>
           <h2 className="section-title">Indian Heritage. Global Luxury Vision.</h2>
@@ -195,22 +236,28 @@ function HomePage() {
             owners who expect white-glove support.
           </p>
         </div>
-        <div className="premium-panel p-8">
-          <p className="section-kicker">Business Model</p>
-          <div className="mt-5 space-y-5 text-sm leading-relaxed text-[var(--color-muted)]">
-            <p>
-              <span className="text-[var(--color-gold)]">Vehicle Sales:</span>{' '}
-              Purchase curated premium vehicles directly.
-            </p>
-            <p>
-              <span className="text-[var(--color-gold)]">Listing Fees:</span>{' '}
-              Sellers partner with VYOM and pay listing charges.
-            </p>
-            <p>
-              <span className="text-[var(--color-gold)]">Modifications:</span>{' '}
-              Bespoke transformation services for Indian and international
-              platforms.
-            </p>
+        <div className="vision-showcase group">
+          <img
+            src={aboutImages.heritageVision}
+            alt="Indian luxury craft and global automotive vision"
+            loading="lazy"
+          />
+          <div className="vision-showcase-copy">
+            <p className="section-kicker">Business Model</p>
+            <div className="mt-4 grid gap-3 text-sm leading-relaxed text-[var(--color-muted)]">
+              <p>
+                <span className="text-[var(--color-gold)]">Vehicle Sales:</span>{' '}
+                curated premium vehicles.
+              </p>
+              <p>
+                <span className="text-[var(--color-gold)]">Listing Fees:</span>{' '}
+                seller partnerships with white-glove presentation.
+              </p>
+              <p>
+                <span className="text-[var(--color-gold)]">Modifications:</span>{' '}
+                bespoke transformations for Indian and global platforms.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -247,19 +294,37 @@ function HomePage() {
       </section>
 
       <section className="luxury-container py-20">
-        <p className="section-kicker">Coming Soon</p>
-        <h2 className="section-title mb-10">International Expansion</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {expansionMarkets.map((market) => (
-            <div
-              key={market.name}
-              className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-5 py-4"
-            >
-              <p className="subheading-font text-2xl text-[var(--color-gold)]">
-                {market.flag} {market.name}
-              </p>
+        <div className="expansion-showcase">
+          <img
+            src={aboutImages.internationalExpansion}
+            alt="VYOM Veloce international expansion roadmap"
+            loading="lazy"
+          />
+          <div className="expansion-overlay" />
+          <div className="expansion-content">
+            <p className="section-kicker">Coming Soon</p>
+            <h2 className="section-title mt-2">International Expansion</h2>
+            <p className="section-description mt-4">
+              A staged global network for collectors who want Indian curation,
+              premium sourcing, and VYOM modification standards across key
+              luxury markets.
+            </p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {expansionMarkets.map((market, index) => (
+                <motion.div
+                  key={market.name}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="expansion-market-card"
+                >
+                  <span>{market.flag}</span>
+                  <p>{market.name}</p>
+                </motion.div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
 

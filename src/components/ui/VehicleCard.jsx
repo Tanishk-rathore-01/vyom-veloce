@@ -13,13 +13,15 @@ function VehicleCard({ vehicle, imageUrl = null, compact = false }) {
       data-cursor="interactive"
     >
       <Link to={`/collection/${vehicle.id}`} className="block">
-        <div className={`${compact ? 'h-48' : 'h-64'} relative overflow-hidden`}>
+        <div className={`${compact ? 'aspect-[16/10]' : 'aspect-[16/11]'} vehicle-image-frame relative overflow-hidden`}>
           <LuxuryImage
             src={imageUrl}
             fallbackSrc={fallbackVehicle}
             alt={vehicle.title}
             containerClassName="h-full w-full"
-            className="transition duration-700 group-hover:scale-110"
+            className="p-2 transition duration-700 group-hover:scale-105"
+            fit="contain"
+            withBackdrop
           />
           <span className="vehicle-card-shine" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.75)] via-transparent to-transparent" />
