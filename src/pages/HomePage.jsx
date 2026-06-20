@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getLatestVehicles } from '../api/vehicles.js'
+import { getLatestVehicles } from '../api/vehicles.ts'
 import { HorizontalVehicleSkeleton } from '../components/ui/LoadingSkeleton.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'
 import VehicleCard from '../components/ui/VehicleCard.jsx'
-import heroImage from '../assets/generated/vyom-hero.png'
-import modificationStudioImage from '../assets/generated/modification-studio.png'
+import heroImage from '../assets/generated/vyom-hero.webp'
+import modificationStudioImage from '../assets/generated/modification-studio.webp'
 import {
   expansionMarkets,
   headquarters,

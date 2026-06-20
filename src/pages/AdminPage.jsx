@@ -3,11 +3,11 @@ import {
   createVehicle,
   deleteVehicle,
   getVehicles,
-} from '../api/vehicles.js'
+} from '../api/vehicles.ts'
 import {
   getListingRequests,
   getModificationRequests,
-} from '../api/requests.js'
+} from '../api/requests.ts'
 import FormField from '../components/ui/FormField.jsx'
 import SkeletonBlock, { InlineLoadingSkeleton } from '../components/ui/LoadingSkeleton.jsx'
 import MetricCard from '../components/ui/MetricCard.jsx'

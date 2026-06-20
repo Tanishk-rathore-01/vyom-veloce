@@ -1,4 +1,4 @@
-import emptyShowroom from '../../assets/generated/empty-showroom.png'
+import emptyShowroom from '../../assets/generated/empty-showroom.webp'
 
 function StateNotice({
   title,

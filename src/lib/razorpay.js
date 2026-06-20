@@ -28,6 +28,11 @@ export async function openRazorpayCheckout({
   onSuccess,
   onFailure,
 }) {
+  // SECURITY NOTE: This is a client-side-only demo flow.
+  // In production, you MUST verify the payment on a backend endpoint
+  // (e.g., Supabase Edge Function) using Razorpay's signature verification
+  // and/or webhook confirmation before confirming the booking.
+  // See README.md "Known Limitations" for details.
   const isLoaded = await loadRazorpayScript()
   if (!isLoaded) {
     throw new Error('Razorpay SDK failed to load. Check your internet connection.')

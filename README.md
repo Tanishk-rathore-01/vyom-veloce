@@ -4,7 +4,7 @@ India's premier luxury vehicle marketplace: **Born in India. Built for the World
 
 VYOM Veloce is a full-stack portfolio project for curated luxury cars and motorcycles, premium seller onboarding, bespoke modification requests, admin inventory management, and Razorpay-powered booking deposits. The latest redesign adds a cinematic black/gold Indian-luxury visual system, generated brand imagery, refined loading/error states, custom controls, and a more polished marketplace experience.
 
-![VYOM Veloce homepage](public/readme/homepage.png)
+![VYOM Veloce homepage](public/readme/homepage.webp)
 
 ## Live Demo
 
@@ -24,6 +24,7 @@ VYOM Veloce is a full-stack portfolio project for curated luxury cars and motorc
 ## Tech Stack
 
 - React 19 + Vite 8
+- TypeScript (typed Supabase client and API layer)
 - React Router 7
 - Tailwind CSS v4 through `@tailwindcss/vite`
 - Framer Motion
@@ -106,7 +107,10 @@ npm run preview
 
 ## Notes
 
-- The build can warn about large image and JavaScript chunks because the app includes many generated PNG assets. The warning is not a failed build; image compression/code splitting would be the next optimization pass.
-- Pexels results are cached in `localStorage` for 24 hours.
-- Razorpay currently collects a 40% booking amount and shows the remaining 60% as payable at physical handover.
 - Generated inventory images are illustrative brand-owned visuals, while real listing data still comes from Supabase.
+- All generated assets have been converted from PNG to WebP, reducing the total image bundle from ~88 MB to ~7 MB (~92% smaller).
+
+## Known Limitations
+
+- **Razorpay payment verification:** This demo uses a client-side-only Razorpay checkout flow. The `payment.success` callback is handled entirely in the browser, which means there is no server-side signature verification or webhook confirmation. In a production system, you would verify the `razorpay_payment_id`, `razorpay_order_id`, and `razorpay_signature` on a backend endpoint (e.g., a Supabase Edge Function or API route) before confirming the booking. Without this verification, a malicious actor could spoof the client-side callback. This is an intentional demo limitation, not an oversight.
+- **Image bundle size:** All generated vehicle, showroom, and modification images are statically imported at build time. This creates a large initial bundle. The next optimization pass would be converting PNG assets to WebP, moving images to `public/` with dynamic resolution, or using dynamic `import()` for off-screen images.

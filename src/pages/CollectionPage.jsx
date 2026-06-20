@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getVehicles } from '../api/vehicles.js'
+import { getVehicles } from '../api/vehicles.ts'
 import FormField from '../components/ui/FormField.jsx'
 import { VehicleGridSkeleton } from '../components/ui/LoadingSkeleton.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'

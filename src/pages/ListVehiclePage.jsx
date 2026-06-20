@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { createListingRequest } from '../api/requests.js'
-import emptyShowroomImage from '../assets/generated/empty-showroom.png'
+import { createListingRequest } from '../api/requests.ts'
+import emptyShowroomImage from '../assets/generated/empty-showroom.webp'
 import FormField from '../components/ui/FormField.jsx'
 import PageTransition from '../components/ui/PageTransition.jsx'
 import StateNotice from '../components/ui/StateNotice.jsx'

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import fallbackVehicle from '../../assets/generated/fallback-vehicle.png'
+import fallbackVehicle from '../../assets/generated/fallback-vehicle.webp'
 import { categoryLabel, firstCharacter, formatINR, originLabel } from '../../lib/format.js'
 import LuxuryImage from './LuxuryImage.jsx'
 
