@@ -6,6 +6,34 @@ import StateNotice from '../components/ui/StateNotice.jsx'
 import { useAuth } from '../context/useAuth.js'
 import { isEmail, requiredMessage } from '../lib/validation.js'
 
+function getAuthErrorMessage(error) {
+  if (!error) return 'An unexpected error occurred.'
+
+  const code = error?.code || error?.status?.toString() || ''
+  const msg = error?.message?.toLowerCase() || ''
+
+  if (code === 'user_already_exists' || msg.includes('user already registered') || msg.includes('email already')) {
+    return 'An account with this email already exists. Try logging in instead.'
+  }
+  if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) {
+    return 'Email not confirmed. Check your inbox or disable email confirmation in Supabase Authentication settings.'
+  }
+  if (code === 'weak_password' || msg.includes('weak password') || msg.includes('password')) {
+    return 'Password is too weak. Use at least 6 characters.'
+  }
+  if (code === 'invalid_credentials' || msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+    return 'Invalid email or password. Please try again.'
+  }
+  if (code === 'signup_disabled' || msg.includes('signup disabled')) {
+    return 'New signups are currently disabled.'
+  }
+  if (msg.includes('rate limit')) {
+    return 'Too many attempts. Please wait a moment and try again.'
+  }
+
+  return error.message || 'Unable to create account.'
+}
+
 function SignupPage() {
   const { signUp, user } = useAuth()
   const [email, setEmail] = useState('')
@@ -39,7 +67,8 @@ function SignupPage() {
 
     const { data, error } = await signUp(email, password)
     if (error) {
-      setErrorMessage(error.message || 'Unable to create account.')
+      console.error('Supabase signup error:', { code: error.code, status: error.status, message: error.message, error })
+      setErrorMessage(getAuthErrorMessage(error))
       setIsSubmitting(false)
       return
     }
